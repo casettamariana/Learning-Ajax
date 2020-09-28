@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='UTF-8'>
+    <title>XMLHttpRequest #01</title>
+    <link rel='stylesheet' href='css/estilo.css'>
+</head>
+
+<body class="conteudo exercicio">
+    <h1>Estados</h1>
+
+    <script>
+        function ajax(config) {
+            const xhr = new XMLHttpRequest();
+
+            xhr.open(config.metodo, config.url,
+                true) // o true e para dizer que essa requisicao sera de forma assincrona
+
+            xhr.onload = e => {
+                if (xhr.status === 200) {
+                    config.sucesso(xhr.response)
+                } else if (xhr.status >= 400) {
+                    config.erro({
+                        codigo: xhr.status,
+                        texto: xhr.statusText
+                    })
+                }
+
+            }
+            xhr.send()
+        }
+
+        function criarTabela(estados) {
+            const linhas = estados.map(estado => {
+                const tdId = document.createElement('td')
+                tdId.innerHTML = estado.id
+
+                const tdNome = document.createElement('td')
+                tdNome.innerHTML = estado.nome
+
+                const tdSigla = document.createElement('td')
+                tdSigla.innerHTML = estado.sigla
+
+                const tr = document.createElement('tr')
+
+                tr.appendChild(tdId)
+                tr.appendChild(tdNome)
+                tr.appendChild(tdSigla)
+
+                return tr
+
+            })
+
+            const tabela = document.createElement('table')
+            linhas.forEach(linha => tabela.appendChild(linha));
+            document.body.appendChild(tabela)
+        }
+
+        ajax({
+            url: "dados/estados.json",
+            metodo: "GET",
+            sucesso(resposta) {
+                const estados = JSON.parse(resposta)
+                criarTabela(estados)
+            },
+            erro(e) {
+                const msg = document.createTextNode(`${e.codigo}: ${e.texto}`)
+                document.body.appendChild(msg)
+            }
+        })
+    </script>
+    <!-- <script>
+        SERVER COMO ESTAVA
+
+
+        const bodyParser = require('body-parser');
+        const boryParser = require('body-parser');
+        const express = require('express');
+        const app = express();
+
+        // middle, é uma função que será executada cada vez que uma frequisição chegar ao servidor
+        app.use(express.static('.')) //servir todos os arquivos estaticos da pasta em que ele esta
+        //app.use('/teste', bodyParser.urlencoded({extended: true})) //transformar em objetos, todos os dados das requisições da url especifica 
+        app.use(bodyParser.urlencoded({
+            extended: true
+        })) //transformar em objetos, todos os dados das requisições 
+        app.use(bodyParser.json()) // transformar os dados em JSON
+
+        // app.get('/teste', (req, res) => res.send('Ok'))
+        app.listen(8080, () => console.log('Executando...'))
+    </script> -->
+</body>
