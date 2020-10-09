@@ -1,0 +1,37 @@
+const bodyParser = require('body-parser');
+const boryParser = require('body-parser');
+const express = require('express');
+const app = express();
+
+
+app.use(express.static('.'))
+
+app.use(bodyParser.urlencoded({extended: true})) 
+app.use(bodyParser.json())
+
+//interpretar o arquivo de upload
+const multer = require('multer')
+
+//criando uma configuracao de upload de aquivo
+const storage = multer.diskStorage({
+    destination: function (req, file, callback) {
+        callback(null, './upload')
+    },
+    filename: function (req, file, callback) {
+        callback(null, `${Date.now()}_${file.originalname}`)
+    }
+});
+
+const upload = multer({storage}).sigle = 'arquivo'
+
+app.post('/upload', (req, res) => {
+    upload(req, res, err => {
+        if(err){
+            return res.end('Ocorreu um erro.')
+        }
+
+        res.end('Concluido com sucesso')
+    })
+});
+
+app.listen(8080, () => console.log('Executando...'))
